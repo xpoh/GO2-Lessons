@@ -1,3 +1,4 @@
+// Программа для нарезки файла на части методом откидывания начального участка с данными
 package main
 
 import (
@@ -8,6 +9,7 @@ import (
 	"time"
 )
 
+// SliceError стуктура для хранения расширенной версии ошибки
 type SliceError struct {
 	err       error
 	indexFile int64
@@ -23,6 +25,7 @@ func (e *SliceError) Unwrap() error {
 	return e.err
 }
 
+// WrapSliceError функция обертка, дополняющая сообщение об ошибке дополнитльной информацией
 func WrapSliceError(err error, indexFile int64, timeError time.Time, msg string) error {
 	return &SliceError{
 		err:       err,
@@ -32,6 +35,7 @@ func WrapSliceError(err error, indexFile int64, timeError time.Time, msg string)
 	}
 }
 
+// SliceFile функция осуществляющая нарезку файла в соответствии с переданной конфигурацией
 func SliceFile(c Config) error {
 	data, err := ioutil.ReadFile(c.FileName)
 	if err != nil {
