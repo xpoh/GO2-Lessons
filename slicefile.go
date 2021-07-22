@@ -1,5 +1,10 @@
+<<<<<<< .mine
 // Package main is a main package
 package slice
+=======
+// Программа для нарезки файла на части методом откидывания начального участка с данными
+package main
+>>>>>>> .theirs
 
 import (
 	"fmt"
@@ -9,7 +14,11 @@ import (
 	"time"
 )
 
+<<<<<<< .mine
 // SliceError Hello
+=======
+// SliceError стуктура для хранения расширенной версии ошибки
+>>>>>>> .theirs
 type SliceError struct {
 	err       error
 	indexFile int64
