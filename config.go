@@ -1,10 +1,15 @@
-package main
+package slice
 
 import (
 	"flag"
 	"fmt"
 )
 
+// Config структура с основными параметрами нарезки файла:
+//	FileNme - Имя файла для нарезки
+//	PacketSize размер пакета данных
+//	SliceStep  шаг в количествах пакетов с которым осуществляется нарезка
+//	Count количество файлов
 type Config struct {
 	FileName   string
 	PacketSize int64
@@ -12,6 +17,7 @@ type Config struct {
 	Count      int64
 }
 
+// ReadConfig возвращает структуру данных с конфигурацией работы программы
 func ReadConfig() (*Config, error) {
 	defer myPanic("Read config error (mypanic)")
 
@@ -32,6 +38,7 @@ func ReadConfig() (*Config, error) {
 	return &c, err
 }
 
+// PrintHelp выводит в стандартный поток вывода справку по работе с программой
 func PrintHelp() {
 	fmt.Println("Slice file util. ver 0.0")
 }
@@ -39,6 +46,7 @@ func PrintHelp() {
 func myPanic(str string) {
 	r := recover()
 	if r != nil {
+		PrintHelp()
 		fmt.Println("Recovered: ", str)
 	}
 }
