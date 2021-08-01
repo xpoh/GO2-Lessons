@@ -17,7 +17,7 @@ type Mass struct {
 }
 
 func (m *Mass) F1(wg *sync.WaitGroup, nrd int, nwr int) {
-	wg.Add(1)
+	defer wg.Done()
 
 	m.mut.RLock()
 	for i := 0; i < nrd; i++ {
@@ -25,16 +25,15 @@ func (m *Mass) F1(wg *sync.WaitGroup, nrd int, nwr int) {
 	}
 	m.mut.RUnlock()
 	m.mut.Lock()
+	defer m.mut.Unlock()
+
 	for i := 0; i < nwr; i++ {
 		m.sm[999-i] = math.Sqrt(float64(999 - i))
 	}
-	//Реализуйте функцию для разблокировки мьютекса с помощью defer
-	defer m.mut.Unlock()
-	wg.Done()
 }
 
 func (m *Mass) F2(wg *sync.WaitGroup, nrd int, nwr int) {
-	wg.Add(1)
+	defer wg.Done()
 
 	m.mut2.Lock()
 	for i := 0; i < nrd; i++ {
@@ -42,12 +41,11 @@ func (m *Mass) F2(wg *sync.WaitGroup, nrd int, nwr int) {
 	}
 	m.mut2.Unlock()
 	m.mut2.Lock()
+	defer m.mut2.Unlock()
+
 	for i := 0; i < nwr; i++ {
 		m.sm[999-i] = math.Sqrt(float64(999 - i))
 	}
-	//Реализуйте функцию для разблокировки мьютекса с помощью defer
-	defer m.mut2.Unlock()
-	wg.Done()
 }
 
 func main() {
@@ -62,9 +60,10 @@ func main() {
 
 	wg := sync.WaitGroup{}
 	for i := 0; i < n; i++ {
+		wg.Add(1)
 		go m.F1(&wg, 100, 900)
 	}
-	// Напишите программу, которая запускает n потоков и дожидается завершения их всех
+
 	wg.Wait()
 
 	fmt.Println("All work done")
