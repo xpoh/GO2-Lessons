@@ -18,7 +18,8 @@ func BenchmarkF1_10_RW(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.F1(&wg, 100, 900)
+		wg.Add(1)
+		go m.F1(&wg, 100, 900)
 	}
 }
 
@@ -34,7 +35,8 @@ func BenchmarkF1_50_RW(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.F1(&wg, 500, 500)
+		wg.Add(1)
+		go m.F1(&wg, 500, 500)
 	}
 }
 
@@ -50,7 +52,8 @@ func BenchmarkF1_90_RW(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.F1(&wg, 900, 100)
+		wg.Add(1)
+		go m.F1(&wg, 900, 100)
 	}
 }
 func BenchmarkF1_10(b *testing.B) {
@@ -65,7 +68,8 @@ func BenchmarkF1_10(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.F2(&wg, 100, 900)
+		wg.Add(1)
+		go m.F2(&wg, 100, 900)
 	}
 }
 
@@ -81,7 +85,8 @@ func BenchmarkF1_50(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.F2(&wg, 500, 500)
+		wg.Add(1)
+		go m.F2(&wg, 500, 500)
 	}
 }
 
@@ -97,6 +102,7 @@ func BenchmarkF1_90(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		m.F2(&wg, 900, 100)
+		wg.Add(1)
+		go m.F2(&wg, 900, 100)
 	}
 }
