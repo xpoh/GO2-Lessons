@@ -17,7 +17,7 @@ type Mass struct {
 }
 
 func (m *Mass) F1(wg *sync.WaitGroup, nrd int, nwr int) {
-	defer wg.Done()
+	wg.Add(1)
 
 	m.mut.RLock()
 	for i := 0; i < nrd; i++ {
@@ -33,7 +33,7 @@ func (m *Mass) F1(wg *sync.WaitGroup, nrd int, nwr int) {
 }
 
 func (m *Mass) F2(wg *sync.WaitGroup, nrd int, nwr int) {
-	defer wg.Done()
+	wg.Add(1)
 
 	m.mut2.Lock()
 	for i := 0; i < nrd; i++ {
