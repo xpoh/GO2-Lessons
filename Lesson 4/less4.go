@@ -43,7 +43,7 @@ func main() {
 	defer close(ch)
 
 	d := data{counter: 0}
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 5; i++ {
 		go d.increment(ctx, ch)
 	}
 	ch <- 1
