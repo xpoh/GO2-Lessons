@@ -1,0 +1,22 @@
+2021/08/05 02:32:50 profile: trace enabled, trace.out
+==================
+WARNING: DATA RACE
+Read at 0x00c000130118 by goroutine 10:
+  main.(*Mass).F1()
+      /Users/akaddr/go/src/GO2-Lessons/Lesson6/less6.go:23 +0x7c
+
+Previous write at 0x00c000130118 by goroutine 9:
+  main.(*Mass).F1()
+      /Users/akaddr/go/src/GO2-Lessons/Lesson6/less6.go:23 +0x98
+
+Goroutine 10 (running) created at:
+  main.main()
+      /Users/akaddr/go/src/GO2-Lessons/Lesson6/less6.go:35 +0x1b7
+
+Goroutine 9 (finished) created at:
+  main.main()
+      /Users/akaddr/go/src/GO2-Lessons/Lesson6/less6.go:35 +0x1b7
+==================
+2021/08/05 02:32:50 profile: trace disabled, trace.out
+Found 1 data race(s)
+exit status 66
