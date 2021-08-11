@@ -45,9 +45,25 @@ func getFileList(path string) (list []fileInfoWithPath, err error) {
 	return result, nil
 }
 
+func printHelp() {
+	fmt.Println("Программа удаления дублированных файлов.")
+	fmt.Println("аргументы:.")
+	fmt.Println("-h 	текщая справка")
+	fmt.Println("-p 	путь для поиска файлов")
+	fmt.Println("-f 	удаление с подтверждением повторяющихся файлов")
+}
+
 func main() {
-	dir := flag.String("path", "", "directory for search")
+	dir := flag.String("p", "", "путь для поиска файлов")
+	fDel := flag.Bool("f", false, "удаление с подтверждением повторяющихся файлов")
+	fHelp := flag.Bool("h", false, "текщая справка")
 	flag.Parse()
+
+	if *fHelp {
+		printHelp()
+		return
+	}
+
 	list, err := getFileList(*dir)
 	if err != nil {
 		panic(err)
@@ -66,22 +82,27 @@ func main() {
 	}
 	fmt.Println("Uniq files count:", len(m))
 	fmt.Println("For delete files count:", len(forDel))
-	fmt.Print("Удалить ", len(forDel), " файлов? [напиши YES] ")
-	var s string
-	fmt.Scanln(&s)
+	for _, p := range forDel {
+		fmt.Println(p)
+	}
+	if *fDel {
+		fmt.Print("Удалить ", len(forDel), " файлов? [напиши YES] ")
+		var s string
+		fmt.Scanln(&s)
 
-	if s == "YES" {
-		count := 0
-		fmt.Println("Удаление файлов:")
-		for _, p := range forDel {
-			fmt.Print("Удаление ", p)
-			if os.Remove(p) == nil {
-				fmt.Println(" [Ok]")
-				count++
-			} else {
-				fmt.Println(" [Error]")
+		if s == "YES" {
+			count := 0
+			fmt.Println("Удаление файлов:")
+			for _, p := range forDel {
+				fmt.Print("Удаление ", p)
+				if os.Remove(p) == nil {
+					fmt.Println(" [Ok]")
+					count++
+				} else {
+					fmt.Println(" [Error]")
+				}
 			}
+			println("Удалено ", count, "файлов")
 		}
-		println("Удалено ", count, "файлов")
 	}
 }
