@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"sync"
 )
 
 type fileInfoWithPath struct {
@@ -53,7 +54,18 @@ func printHelp() {
 	fmt.Println("-f 	удаление с подтверждением повторяющихся файлов")
 }
 
+func (f *fileInfoWithPath) removeFile(wg *sync.WaitGroup) (err error) {
+	defer wg.Done()
+	err = os.Remove(f.path)
+	if err == nil {
+		fmt.Println("Удален файл: ", f.path)
+	}
+	return err
+}
+
 func main() {
+	wg := sync.WaitGroup{}
+	fConfirm := false
 	dir := flag.String("p", "", "путь для поиска файлов")
 	fDel := flag.Bool("f", false, "удаление с подтверждением повторяющихся файлов")
 	fHelp := flag.Bool("h", false, "текщая справка")
@@ -64,45 +76,33 @@ func main() {
 		return
 	}
 
+	if *fDel {
+		fmt.Print("Удалять файлы сразу? [напиши YES] ")
+		var s string
+		_, _ = fmt.Scanln(&s)
+
+		if s == "YES" {
+			fConfirm = true
+		}
+	}
+
 	list, err := getFileList(*dir)
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println("Найдено файлов: ", len(list))
 	m := make(map[string]string)
-	forDel := make(map[string]string)
+
 	for i := 0; i < len(list); i++ {
 		idx := list[i].fs.Name() + "_" + strconv.FormatInt(list[i].fs.Size(), 10)
 		_, ok := m[idx]
 		if !ok {
 			m[idx] = list[i].path
-		} else {
-			forDel[idx] = list[i].path
+			fmt.Println("Uniq file: ", list[i].path)
+		} else if fConfirm {
+			wg.Add(1)
+			go list[i].removeFile(&wg)
 		}
 	}
-	fmt.Println("Uniq files count:", len(m))
-	fmt.Println("For delete files count:", len(forDel))
-	for _, p := range forDel {
-		fmt.Println(p)
-	}
-	if *fDel {
-		fmt.Print("Удалить ", len(forDel), " файлов? [напиши YES] ")
-		var s string
-		fmt.Scanln(&s)
-
-		if s == "YES" {
-			count := 0
-			fmt.Println("Удаление файлов:")
-			for _, p := range forDel {
-				fmt.Print("Удаление ", p)
-				if os.Remove(p) == nil {
-					fmt.Println(" [Ok]")
-					count++
-				} else {
-					fmt.Println(" [Error]")
-				}
-			}
-			println("Удалено ", count, "файлов")
-		}
-	}
+	wg.Wait()
 }
