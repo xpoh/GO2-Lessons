@@ -10,11 +10,15 @@ import (
 	"sync"
 )
 
+// fileInfoWithPath структура для хранения иформации об файле
 type fileInfoWithPath struct {
 	fs   fs.FileInfo
 	path string
 }
 
+// getFileList возвращает слайс с иформацией о файлах
+// Входные параметры: path - директория для поиска файлов
+// Выходные параметры: list - слайс файлов, err - ошибка
 func getFileList(path string) (list []fileInfoWithPath, err error) {
 	var result []fileInfoWithPath
 	var tmp = fileInfoWithPath{
@@ -46,6 +50,7 @@ func getFileList(path string) (list []fileInfoWithPath, err error) {
 	return result, nil
 }
 
+// printHelp выводит справку
 func printHelp() {
 	fmt.Println("Программа удаления дублированных файлов.")
 	fmt.Println("аргументы:.")
@@ -54,6 +59,8 @@ func printHelp() {
 	fmt.Println("-f 	удаление с подтверждением повторяющихся файлов")
 }
 
+// removeFile метод принимающий структуру *fileInfoWithPath
+// sync.WaitGroup для синхронизации, возвращающий err - ошибку
 func (f *fileInfoWithPath) removeFile(wg *sync.WaitGroup) (err error) {
 	defer wg.Done()
 	err = os.Remove(f.path)
@@ -101,7 +108,9 @@ func main() {
 			fmt.Println("Uniq file: ", list[i].path)
 		} else if fConfirm {
 			wg.Add(1)
-			go list[i].removeFile(&wg)
+			go func() {
+				err = list[i].removeFile(&wg)
+			}()
 		}
 	}
 	wg.Wait()
